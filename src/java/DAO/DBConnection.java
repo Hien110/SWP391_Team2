@@ -14,7 +14,7 @@ public class DBConnection {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             connection = DriverManager.getConnection(dbURL);
 
-            if (connection != null) {
+            if (connection != null && !connection.isClosed()) {
                 System.out.println("Kết nối thành công đến cơ sở dữ liệu.");
             } else {
                 System.out.println("Không thể kết nối đến cơ sở dữ liệu.");
@@ -27,6 +27,22 @@ public class DBConnection {
     public Connection getConnection() {
         return connection;
     }
+    
+    public boolean isConnected() {
+        try {
+            return connection != null && !connection.isClosed();
+        } catch (SQLException e) {
+            System.out.println("Lỗi kiểm tra kết nối: " + e.getMessage());
+            return false;
+        }
+    }
 
-
+    public static void main(String[] args) {
+        DBConnection dbConnection = new DBConnection();
+        if (dbConnection.isConnected()) {
+            System.out.println("Kết nối đang hoạt động.");
+        } else {
+            System.out.println("Kết nối không hoạt động.");
+        }
+    }
 }
