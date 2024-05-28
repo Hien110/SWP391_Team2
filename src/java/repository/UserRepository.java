@@ -10,11 +10,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import model.User;
+
 /**
  *
  * @author ADMIN
  */
-public class UserRepository extends DBConnection{
+public class UserRepository extends DBConnection {
+
     public ArrayList<User> getAll() {
         ArrayList<User> user = new ArrayList<>();
         String stm1 = "select * from USERS";
@@ -27,7 +29,7 @@ public class UserRepository extends DBConnection{
                 user.add(new User(re.getInt(1),
                         re.getString(2),
                         re.getString(3),
-                        re.getString(4), 
+                        re.getString(4),
                         re.getInt(5),
                         re.getString(6),
                         re.getString(7),
@@ -39,12 +41,12 @@ public class UserRepository extends DBConnection{
         }
         return user;
     }
-    
-    public User getAccountByUid(int uid) {
-        String sql = "select * from Account where uid=?";
+
+    public User getAccountByEmail(String username) {
+        String sql = "select * from USERS where email=?";
         try {
             PreparedStatement st = connection.prepareCall(sql);
-            st.setInt(1, uid);
+            st.setString(1, username);
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 User c = new User();
@@ -63,16 +65,16 @@ public class UserRepository extends DBConnection{
         }
         return null;
     }
-    
+
     public User getAccountByUsername(String username) {
-        String sql = "select * from Account where username=?";
+        String sql = "select * from USERS where username=?";
         try {
             PreparedStatement st = connection.prepareCall(sql);
             st.setString(1, username);
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
                 User c = new User();
-               c.setUserid(rs.getInt(1));
+                c.setUserid(rs.getInt(1));
                 c.setUsername(rs.getString(2));
                 c.setEmail(rs.getString(3));
                 c.setPassword(rs.getString(4));
@@ -87,10 +89,22 @@ public class UserRepository extends DBConnection{
         }
         return null;
     }
-    
-        public static void main(String[] args) {
+
+    public void newUser(User c) {
+        String sql = "insert into USERS (username, email, password, roleid, banstatus) VALUES (?, ?, ?, 3, 0);";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setString(1, c.getUsername());
+            st.setString(2, c.getEmail());
+            st.setString(3, c.getPassword());
+            st.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    public static void main(String[] args) {
         UserRepository list = new UserRepository();
-        ArrayList<User> s = list.getAll();
-        System.out.println(s);
+        System.out.println(list.getAccountByEmail("minhhien30201@gmail.com"));
     }
 }
